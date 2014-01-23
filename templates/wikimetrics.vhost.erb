@@ -1,7 +1,9 @@
+<% if @server_port and @server_port != 80 -%>
 Listen <%= @server_port %>
+<% end -%>
 <VirtualHost *:<%= @server_port %>>
   ServerName   <%= @server_name %>
-<% if @server_aliases -%>
+<% if @server_aliases and not Array(@server_aliases).empty? -%>
   ServerAlias <%= Array(@server_aliases).join(' ') %>
 <% end %>
 

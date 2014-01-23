@@ -21,11 +21,8 @@ class wikimetrics::database(
     $db_root_pass = undef,
 )
 {
-    if !defined(Package['mysql-server']) {
-        package { 'mysql-server':
-            ensure => 'installed',
-        }
-    }
+    # mysql-server must be installed on this node to use this class.
+    Package['mysql-server'] -> Class['::wikimetrics::database']
 
     # Only use -u or -p flag to mysql commands if
     # root username or root password are set.

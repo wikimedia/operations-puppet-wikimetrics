@@ -14,16 +14,10 @@ class wikimetrics::web::apache($ensure = 'present')
     $server_aliases   = $::wikimetrics::server_aliases
     $ssl_redirect     = $::wikimetrics::ssl_redirect
 
+    include ::apache
 
-    if !defined(Package['libapache2-mod-wsgi']) {
-        package { 'libapache2-mod-wsgi':
-            ensure => 'installed',
-        }
-    }
     if !defined(Apache::Mod['wsgi']) {
-        apache::mod { 'wsgi':
-            require => Package['libapache2-mod-wsgi'],
-        }
+        apache::mod { 'wsgi': }
     }
     # we only need mod rewrite if $ssl_redirect is true
     if $ssl_redirect and !defined(Apache::Mod['rewrite']) {
@@ -41,8 +35,8 @@ class wikimetrics::web::apache($ensure = 'present')
     # disable if sites-enabled symlink exists and ensure is absent
     if ($ensure == 'absent') {
         exec { "apache_disable_${site}":
-            command   => "a2dissite -qf ${site}",
-            onlyif    => "test -L /etc/apache2/sites-enabled/${site}",
+            command   => "/usr/sbin/a2dissite -qf ${site}",
+            onlyif    => "/usr/bin/test -L /etc/apache2/sites-enabled/${site}",
             notify    => Service['apache2'],
             require   => Package['apache2'],
             before    => File["/etc/apache2/sites-available/${site}"],
@@ -51,8 +45,8 @@ class wikimetrics::web::apache($ensure = 'present')
     # otherwise enable the site!
     else {
         exec { "apache_enable_${site}":
-            command   => "a2ensite -qf ${site}",
-            unless    => "test -L /etc/apache2/sites-enabled/${site}",
+            command   => "/usr/sbin/a2ensite -qf ${site}",
+            unless    => "/usr/bin/test -L /etc/apache2/sites-enabled/${site}",
             notify    => Service['apache2'],
             require   => Package['apache2'],
             subscribe => [
