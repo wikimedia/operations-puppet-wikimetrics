@@ -24,9 +24,9 @@ class wikimetrics::web::daemon($ensure = 'present')
         hasrestart => true,
         subscribe  => [
             File['/etc/init/wikimetrics-web.conf'],
-            File["${::wikimetrics::config_directory}/web_config.yaml"],
-            File["${::wikimetrics::config_directory}/queue_config.yaml"],
-            File["${::wikimetrics::config_directory}/db_config.yaml"],
+            File["${config_directory}/web_config.yaml"],
+            File["${config_directory}/queue_config.yaml"],
+            File["${config_directory}/db_config.yaml"],
         ],
     }
 }

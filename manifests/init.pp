@@ -57,6 +57,10 @@
 #
 # $config_directory      - Config directory for wikimetrics .yaml config files.
 #                          Default: /etc/wikimetrics
+# $config_file_owner     - User ownership of wikimetrics .yaml config files.
+#                          Default: root
+# $config_file_group     - Group ownership of wikimetrics .yaml config files.
+#                          Default: root
 #
 class wikimetrics(
     # path in which to install wikimetrics
@@ -72,6 +76,7 @@ class wikimetrics(
 
     $celery_broker_url     = 'redis://localhost:6379/0',
     $celery_result_url     = 'redis://localhost:6379/0',
+    $celery_concurrency    = $::processorcount,
 
     $server_name           = 'localhost',
     $server_port           = 5000,
@@ -100,6 +105,8 @@ class wikimetrics(
     $revision_tablename    = undef,
 
     $config_directory      = '/etc/wikimetrics',
+    $config_file_owner     = 'root',
+    $config_file_group     = 'root',
 )
 {
     if !defined(Group[$group]) {
@@ -131,18 +138,26 @@ class wikimetrics(
     }
 
     file { $config_directory:
-        ensure => 'directory',
+        ensure  => 'directory',
+        owner   => $config_file_owner,
+        group   => $config_file_group,
     }
 
     # db_config, queue_config, web_config
     file { "${config_directory}/db_config.yaml":
         content => template('wikimetrics/db_config.yaml.erb'),
+        owner   => $config_file_owner,
+        group   => $config_file_group,
     }
     file { "${wikimetrics::config_directory}/queue_config.yaml":
-        content => template('wikimetrics/queue_config.yaml.erb')
+        content => template('wikimetrics/queue_config.yaml.erb'),
+        owner   => $config_file_owner,
+        group   => $config_file_group,
     }
     file { "${wikimetrics::config_directory}/web_config.yaml":
-        content => template('wikimetrics/web_config.yaml.erb')
+        content => template('wikimetrics/web_config.yaml.erb'),
+        owner   => $config_file_owner,
+        group   => $config_file_group,
     }
 
     if !defined(Package['gcc']) {

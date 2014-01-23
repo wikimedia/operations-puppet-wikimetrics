@@ -6,12 +6,14 @@ class wikimetrics::web::apache($ensure = 'present')
 {
     Class['::wikimetrics'] -> Class['::wikimetrics::web::apache']
 
-    $site           = 'wikimetrics'
-    $docroot        = "${::wikimetrics::path}/wikimetrics"
-    $server_name    = $::wikimetrics::server_name
-    $server_port    = $::wikimetrics::server_port
-    $server_aliases = $::wikimetrics::server_aliases
-    $ssl_redirect   = $::wikimetrics::ssl_redirect
+    $config_directory = $::wikimetrics::config_directory
+    $site             = 'wikimetrics'
+    $docroot          = "${::wikimetrics::path}/wikimetrics"
+    $server_name      = $::wikimetrics::server_name
+    $server_port      = $::wikimetrics::server_port
+    $server_aliases   = $::wikimetrics::server_aliases
+    $ssl_redirect     = $::wikimetrics::ssl_redirect
+
 
     if !defined(Package['libapache2-mod-wsgi']) {
         package { 'libapache2-mod-wsgi':
@@ -55,9 +57,9 @@ class wikimetrics::web::apache($ensure = 'present')
             require   => Package['apache2'],
             subscribe => [
                 File["/etc/apache2/sites-available/${site}"],
-                File["${::wikimetrics::config_directory}/web_config.yaml"],
-                File["${::wikimetrics::config_directory}/queue_config.yaml"],
-                File["${::wikimetrics::config_directory}/db_config.yaml"],
+                File["${config_directory}/web_config.yaml"],
+                File["${config_directory}/queue_config.yaml"],
+                File["${config_directory}/db_config.yaml"],
             ],
         }
     }

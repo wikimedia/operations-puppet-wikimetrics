@@ -32,9 +32,9 @@ class wikimetrics::queue
         require    => Class['::redis'],
         subscribe  => [
             File['/etc/init/wikimetrics-queue.conf'],
-            File['/etc/wikimetrics/queue_config.yaml'],
-            File['/etc/wikimetrics/db_config.yaml'],
-            File['/etc/wikimetrics/web_config.yaml'],
+            File["${config_directory}/queue_config.yaml"],
+            File["${config_directory}/db_config.yaml"],
+            File["${config_directory}/web_config.yaml"],
         ],
     }
 }
