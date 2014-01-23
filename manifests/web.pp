@@ -1,52 +1,41 @@
-# == Class wikimetrics::web inherits wikimetrics
-# Installs an Apache VirtualHost to run wikimetrics
-# inside of WSGI.
+# == Class wikimetrics::web
+# Wrapper for wikimetrics::web::* classes.
+# == Parameters
+# $mode             - Either 'apache' or 'daemon'.
+#                     Use 'daemon' in development environment
 #
-class wikimetrics::web
+class wikimetrics::web($mode = 'apache')
 {
-    Class['::wikimetrics'] -> Class['::wikimetrics::web']
+    # Conditionally ensure that the correct
+    # web mode class is used.
+    # These classes know how to ensure => absent,
+    # so we include them both here with the
+    # relevant ensure set for them.
+    # We also, require the class with ensure =>
+    # absent before the class with ensure => present,
+    # so as to be sure the unwanted service is shut down
+    # before the desired one is started.
+    if $mode == 'apache' {
+        $apache_ensure = 'present'
+        $daemon_ensure = 'absent'
 
-    $site           = 'wikimetrics'
-    $docroot        = "${::wikimetrics::path}/wikimetrics"
-    $server_name    = $::wikimetrics::server_name
-    $server_port    = $::wikimetrics::server_port
-    $server_aliases = $::wikimetrics::server_aliases
-    $ssl_redirect   = $::wikimetrics::ssl_redirect
+        $apache_require = '::wikimetrics::web::daemon'
+        $daemon_require = '::wikimetrics'
+    }
+    else {
+        $apache_ensure = 'absent'
+        $daemon_ensure = 'present'
 
-    if !defined(Package['libapache2-mod-wsgi']) {
-        package { 'libapache2-mod-wsgi':
-            ensure => 'installed',
-        }
-    }
-    if !defined(Apache::Mod['wsgi']) {
-        apache::mod { 'wsgi':
-            require => Package['libapache2-mod-wsgi'],
-        }
-    }
-    # we only need mod rewrite if $ssl_redirect is true
-    if $ssl_redirect and !defined(Apache::Mod['rewrite']) {
-        apache::mod { 'rewrite':
-            before => Exec["apache_enable_${site}"],
-        }
+        $apache_require = '::wikimetrics'
+        $daemon_require = '::wikimetrics::web::apache'
     }
 
-    file { "/etc/apache2/sites-available/${site}":
-        ensure  => file,
-        content => template('wikimetrics/wikimetrics.vhost.erb'),
-        require => [Package['apache2'], Apache::Mod['wsgi']],
-        before  => Exec["apache_enable_${site}"],
+    class { '::wikimetrics::web::apache':
+        ensure  => $apache_ensure,
+        require => Class[$apache_require],
     }
-
-    exec { "apache_enable_${site}":
-        command   => "a2ensite -qf ${site}",
-        unless    => "test -L /etc/apache2/sites-enabled/${site}",
-        notify    => Service['apache2'],
-        require   => Package['apache2'],
-        subscribe => [
-            File["/etc/apache2/sites-available/${site}"],
-            File["${::wikimetrics::config_directory}/web_config.yaml"],
-            File["${::wikimetrics::config_directory}/queue_config.yaml"],
-            File["${::wikimetrics::config_directory}/db_config.yaml"],
-        ],
+    class { '::wikimetrics::web::daemon':
+        ensure  => $daemon_ensure,
+        require => Class[$daemon_require],
     }
 }

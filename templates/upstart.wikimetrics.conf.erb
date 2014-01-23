@@ -1,0 +1,7 @@
+start on startup
+setuid wikimetrics
+setgid wikimetrics
+
+script
+    wikimetrics --mode <%= @mode %> --db-config <%= @config_directory %>/db_config.yaml --queue-config <%= @config_directory %>/queue_config.yaml --web-config <%= @config_directory %>/web_config.yaml
+end script
