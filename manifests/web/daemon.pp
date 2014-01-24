@@ -5,19 +5,25 @@ class wikimetrics::web::daemon($ensure = 'present')
     Class['wikimetrics'] -> Class['wikimetrics::web::daemon']
 
     $mode             = 'web'
-    $config_directory = $wikimetrics::config_directory
-    $wikimetrics_path = $wikimetrics::path
+    $config_directory = $::wikimetrics::config_directory
+    $wikimetrics_path = $::wikimetrics::path
+    $service_start_on = $::wikimetrics::service_start_on
 
     # install upstart init file
     file { '/etc/init/wikimetrics-web.conf':
         content => template('wikimetrics/upstart.wikimetrics.conf.erb'),
         require => Class['::wikimetrics'],
     }
+    file { '/etc/init.d/wikimetrics-web':
+        ensure => 'link',
+        target => '/lib/init/upstart-job',
+    }
 
     $service_ensure = $ensure ? {
         'absent' => 'stopped',
         default  => 'running',
     }
+
     service { 'wikimetrics-web':
         ensure     => $service_ensure,
         provider   => 'upstart',

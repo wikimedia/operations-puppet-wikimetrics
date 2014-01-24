@@ -61,7 +61,8 @@
 #                          Default: root
 # $config_file_group     - Group ownership of wikimetrics .yaml config files.
 #                          Default: root
-#
+# $service_start_on      - start on stanza for upstart jobs (queue, web daemon).
+#                          Default: started network-services
 class wikimetrics(
     # path in which to install wikimetrics
     $path                  = '/srv/wikimetrics',
@@ -107,6 +108,7 @@ class wikimetrics(
     $config_directory      = '/etc/wikimetrics',
     $config_file_owner     = 'root',
     $config_file_group     = 'root',
+    $service_start_on      = 'started network-services',
 )
 {
     if !defined(Group[$group]) {

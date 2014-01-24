@@ -16,13 +16,19 @@ class wikimetrics::queue
     # Install and set up redis using the redis module.
     include ::redis
 
-    $mode = 'queue'
-    $config_directory = $wikimetrics::config_directory
-    $wikimetrics_path = $wikimetrics::path
+    $mode             = 'queue'
+    $config_directory = $::wikimetrics::config_directory
+    $wikimetrics_path = $::wikimetrics::path
+    $service_start_on = $::wikimetrics::service_start_on
+
     # install upstart init file
     file { '/etc/init/wikimetrics-queue.conf':
         content => template('wikimetrics/upstart.wikimetrics.conf.erb'),
         require => Class['::wikimetrics'],
+    }
+    file { '/etc/init.d/wikimetrics-queue':
+        ensure => 'link',
+        target => '/lib/init/upstart-job',
     }
 
     service { 'wikimetrics-queue':
