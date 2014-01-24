@@ -1,11 +1,11 @@
-<% if @server_port and @server_port != 80 -%>
+<% if @server_port and @server_port.to_i != 80 -%>
 Listen <%= @server_port %>
 <% end -%>
 <VirtualHost *:<%= @server_port %>>
   ServerName   <%= @server_name %>
 <% if @server_aliases and not Array(@server_aliases).empty? -%>
   ServerAlias <%= Array(@server_aliases).join(' ') %>
-<% end %>
+<% end -%>
 
   DocumentRoot <%= @docroot %>
   ServerAdmin  noc@wikimedia.org
@@ -15,7 +15,7 @@ Listen <%= @server_port %>
   # alert, emerg.
   LogLevel warn
 
-  CustomLog /var/log/apache2/access.metrics.log combined
+  CustomLog /var/log/apache2/access.wikimetrics.log combined
 
 <% if @ssl_redirect -%>
   RewriteEngine on
