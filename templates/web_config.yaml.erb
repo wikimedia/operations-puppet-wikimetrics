@@ -19,7 +19,7 @@ META_MW_TOKEN_URI                   : 'w/index.php?title=Special:OAuth/token'
 META_MW_AUTH_URI                    : 'wiki/Special:OAuth/authorize'
 META_MW_USERINFO_URI                : 'w/api.php?action=query&meta=userinfo&format=json'
 META_MW_IDENTIFY_URI                : 'w/index.php?title=Special:OAuth/identify&format=json'
-META_MW_REDIRECT_URI                : http<%= 's' if @ssl_redirect %>://<%= @server_name %><%= @server_port ? ':' + @server_port : '' %>/auth/meta_mw'
+META_MW_REDIRECT_URI                : 'http<%= 's' if @ssl_redirect %>://<%= @server_name %><%= @server_port ? ':' + @server_port : '' %>/auth/meta_mw'
 META_MW_CONSUMER_KEY                : '<%= @meta_mw_consumer_key %>'
 META_MW_CLIENT_SECRET               : '<%= @meta_mw_client_secret %>'
 
