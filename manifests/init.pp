@@ -151,12 +151,12 @@ class wikimetrics(
         owner   => $config_file_owner,
         group   => $config_file_group,
     }
-    file { "${wikimetrics::config_directory}/queue_config.yaml":
+    file { "${config_directory}/queue_config.yaml":
         content => template('wikimetrics/queue_config.yaml.erb'),
         owner   => $config_file_owner,
         group   => $config_file_group,
     }
-    file { "${wikimetrics::config_directory}/web_config.yaml":
+    file { "${config_directory}/web_config.yaml":
         content => template('wikimetrics/web_config.yaml.erb'),
         owner   => $config_file_owner,
         group   => $config_file_group,
