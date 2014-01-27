@@ -10,8 +10,8 @@ GOOGLE_CLIENT_ID                    : '<%= @google_client_id %>'
 GOOGLE_AUTH_PROVIDER_X509_CERT_URL  : 'https://www.googleapis.com/oauth2/v1/certs'
 GOOGLE_AUTH_SCOPE                   : 'https://www.googleapis.com/auth/userinfo.email'
 GOOGLE_USERINFO_URI                 : 'https://www.googleapis.com/oauth2/v1/userinfo'
-GOOGLE_REDIRECT_URI                 : 'http<%= 's' if @ssl_redirect %>://<%= @server_name %><%= @server_port ? ':' + @server_port : '' %>/auth/google'
-GOOGLE_JAVASCRIPT_ORIGIN            : 'http<%= 's' if @ssl_redirect %>://<%= @server_name %><%= @server_port ? ':' + @server_port : '' %>'
+GOOGLE_REDIRECT_URI                 : 'http<%= 's' if @ssl_redirect %>://<%= @server_name %><%= @server_port and @server_port.to_i != 80 ? ':' + @server_port : '' %>/auth/google'
+GOOGLE_JAVASCRIPT_ORIGIN            : 'http<%= 's' if @ssl_redirect %>://<%= @server_name %><%= @server_port and @server_port.to_i != 80 ? ':' + @server_port : '' %>'
 
 META_MW_BASE_URL                    : 'https://meta.wikimedia.org/'
 META_MW_BASE_INDEX                  : 'w/index.php'
@@ -19,9 +19,9 @@ META_MW_TOKEN_URI                   : 'w/index.php?title=Special:OAuth/token'
 META_MW_AUTH_URI                    : 'wiki/Special:OAuth/authorize'
 META_MW_USERINFO_URI                : 'w/api.php?action=query&meta=userinfo&format=json'
 META_MW_IDENTIFY_URI                : 'w/index.php?title=Special:OAuth/identify&format=json'
-META_MW_REDIRECT_URI                : 'http<%= 's' if @ssl_redirect %>://<%= @server_name %><%= @server_port ? ':' + @server_port : '' %>/auth/meta_mw'
+META_MW_REDIRECT_URI                : 'http<%= 's' if @ssl_redirect %>://<%= @server_name %><%= @server_port and @server_port.to_i != 80  ? ':' + @server_port : '' %>/auth/meta_mw'
 META_MW_CONSUMER_KEY                : '<%= @meta_mw_consumer_key %>'
 META_MW_CLIENT_SECRET               : '<%= @meta_mw_client_secret %>'
 
-SERVER_HOST                         : 0.0.0.0
+SERVER_HOST                         : '0.0.0.0'
 SERVER_PORT                         : <%= @server_port %>
