@@ -143,6 +143,7 @@ class wikimetrics(
         ensure  => 'directory',
         owner   => $config_file_owner,
         group   => $config_file_group,
+        require => Git::Clone['analytics/wikimetrics'],
     }
 
     # db_config, queue_config, web_config
@@ -150,16 +151,19 @@ class wikimetrics(
         content => template('wikimetrics/db_config.yaml.erb'),
         owner   => $config_file_owner,
         group   => $config_file_group,
+        require => File[$config_directory],
     }
     file { "${config_directory}/queue_config.yaml":
         content => template('wikimetrics/queue_config.yaml.erb'),
         owner   => $config_file_owner,
         group   => $config_file_group,
+        require => File[$config_directory],
     }
     file { "${config_directory}/web_config.yaml":
         content => template('wikimetrics/web_config.yaml.erb'),
         owner   => $config_file_owner,
         group   => $config_file_group,
+        require => File[$config_directory],
     }
 
     if !defined(Package['gcc']) {
