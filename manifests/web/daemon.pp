@@ -14,10 +14,6 @@ class wikimetrics::web::daemon($ensure = 'present')
         content => template('wikimetrics/upstart.wikimetrics.conf.erb'),
         require => Class['::wikimetrics'],
     }
-    file { '/etc/init.d/wikimetrics-web':
-        ensure => 'link',
-        target => '/lib/init/upstart-job',
-    }
 
     $service_ensure = $ensure ? {
         'absent' => 'stopped',

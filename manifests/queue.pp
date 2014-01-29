@@ -26,10 +26,6 @@ class wikimetrics::queue
         content => template('wikimetrics/upstart.wikimetrics.conf.erb'),
         require => Class['::wikimetrics'],
     }
-    file { '/etc/init.d/wikimetrics-queue':
-        ensure => 'link',
-        target => '/lib/init/upstart-job',
-    }
 
     service { 'wikimetrics-queue':
         ensure     => 'running',

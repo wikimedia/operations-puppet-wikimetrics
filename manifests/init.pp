@@ -8,10 +8,6 @@
 # path in which to install wikimetrics
 # $path                  - Path in which to clone wikimetrics.
 #                          Default: /vagrant/wikimetrics
-# $user                  - User to create and run wikimetrics as.
-#                          Default: wikimetrics
-# $group                 - wikimetrics user group.
-#                          Default: wikimetrics
 # $repository_owner      - owner username of the cloned wikimetrics repository.
 #                          This will default to $wikimetrics::user if it is not set.
 # $debug                 - Run wikimetrics in debug mode.  Default: true
@@ -66,8 +62,6 @@
 class wikimetrics(
     # path in which to install wikimetrics
     $path                  = '/srv/wikimetrics',
-    $user                  = 'wikimetrics',
-    $group                 = 'wikimetrics',
 
     # owner username of the cloned wikimetrics repository.
     # This will default to $wikimetrics::user if it is not set.
@@ -111,22 +105,20 @@ class wikimetrics(
     $service_start_on      = 'started network-services',
 )
 {
-    if !defined(Group[$group]) {
-        group { $group:
-          ensure => present,
-          system => true,
-        }
+    $user  = 'wikimetrics'
+    $group = 'wikimetrics'
+
+    group { $group:
+      ensure => present,
+      system => true,
     }
 
-    if !defined(User[$user]) {
-        user { $user:
-            ensure     => present,
-            gid        => $group,
-            home       => $path,
-            managehome => false,
-            system     => true,
-            require    => Group[$group],
-        }
+    user { $user:
+        ensure     => present,
+        gid        => $group,
+        home       => $path,
+        managehome => false,
+        system     => true,
     }
 
     $owner = $repository_owner ? {
@@ -151,19 +143,16 @@ class wikimetrics(
         content => template('wikimetrics/db_config.yaml.erb'),
         owner   => $config_file_owner,
         group   => $config_file_group,
-        require => File[$config_directory],
     }
     file { "${config_directory}/queue_config.yaml":
         content => template('wikimetrics/queue_config.yaml.erb'),
         owner   => $config_file_owner,
         group   => $config_file_group,
-        require => File[$config_directory],
     }
     file { "${config_directory}/web_config.yaml":
         content => template('wikimetrics/web_config.yaml.erb'),
         owner   => $config_file_owner,
         group   => $config_file_group,
-        require => File[$config_directory],
     }
 
     if !defined(Package['gcc']) {
