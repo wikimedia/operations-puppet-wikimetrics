@@ -25,8 +25,6 @@ class wikimetrics::database(
     $db_root_user                = 'root',
     $db_root_pass                = undef,
     $wikimetrics_path            = '/srv/wikimetrics',
-
-
 )
 {
     # mysql-server must be installed on this node to use this class.
@@ -43,24 +41,25 @@ class wikimetrics::database(
         default => "-p'${db_root_pass}'",
     }
 
-    # create wikimetrics_testing
-    exec { 'wikimetrics_testing_mysql_create_database':
-        command => "/usr/bin/mysql ${username_option} ${password_option} -e \"CREATE DATABASE ${db_name_wikimetrics_testing}; USE ${db_name_wikimetrics_testing};\"",
-        unless  => "/usr/bin/mysql ${username_option} ${password_option} -e 'SHOW DATABASES' | /bin/grep -q ${db_name_wikimetrics_testing}",
-        user    => 'root',
-    }
-
     # wikimetrics is going to need a wikimetrics database and user.
     exec { 'wikimetrics_mysql_create_database':
         command => "/usr/bin/mysql ${username_option} ${password_option} -e \"CREATE DATABASE ${db_name_wikimetrics}; USE ${db_name_wikimetrics};\"",
-        unless  => "/usr/bin/mysql ${username_option} ${password_option} -e 'SHOW DATABASES' | /bin/grep -v ${db_name_wikimetrics_testing} | /bin/grep -q ${db_name_wikimetrics}",
+        unless  => "/usr/bin/mysql ${username_option} ${password_option} -e 'SHOW DATABASES' | /bin/grep -q -P '^${db_name_wikimetrics}\$'",
         user    => 'root',
     }
 
-    # create wiki testing (is there a way not to repeat this like ahem three times?)
+    # create wikimetrics_testing
+    exec { 'wikimetrics_testing_mysql_create_database':
+        command => "/usr/bin/mysql ${username_option} ${password_option} -e \"CREATE DATABASE ${db_name_wikimetrics_testing}; USE ${db_name_wikimetrics_testing};\"",
+        unless  => "/usr/bin/mysql ${username_option} ${password_option} -e 'SHOW DATABASES' | /bin/grep -q -P '^${db_name_wikimetrics_testing}\$'",
+        user    => 'root',
+    }
+
+
+    # create mediawiki_testing
     exec { 'wiki_testing_mysql_create_database':
         command => "/usr/bin/mysql ${username_option} ${password_option} -e \"CREATE DATABASE ${db_name_mediawiki_testing}; USE ${db_name_mediawiki_testing};\"",
-        unless  => "/usr/bin/mysql ${username_option} ${password_option} -e 'SHOW DATABASES' | /bin/grep -q ${db_name_mediawiki_testing}",
+        unless  => "/usr/bin/mysql ${username_option} ${password_option} -e 'SHOW DATABASES' | /bin/grep -q -P '^${db_name_mediawiki_testing}\$'",
         user    => 'root',
     }
 
@@ -72,8 +71,8 @@ GRANT ALL PRIVILEGES ON ${db_name_wikimetrics}.*         TO '${db_user}'@'localh
 GRANT ALL PRIVILEGES ON ${db_name_wikimetrics}.*         TO '${db_user}'@'127.0.0.1' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON ${db_name_wikimetrics_testing}.* TO '${db_user}'@'localhost' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON ${db_name_wikimetrics_testing}.* TO '${db_user}'@'127.0.0.1' WITH GRANT OPTION;
-GRANT ALL PRIVILEGES ON ${db_name_mediawiki_testing}.*        TO '${db_user}'@'localhost' WITH GRANT OPTION;
-GRANT ALL PRIVILEGES ON ${db_name_mediawiki_testing}.*        TO '${db_user}'@'127.0.0.1' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON ${db_name_mediawiki_testing}.*   TO '${db_user}'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON ${db_name_mediawiki_testing}.*   TO '${db_user}'@'127.0.0.1' WITH GRANT OPTION;
 FLUSH PRIVILEGES;\"",
         unless  => "/usr/bin/mysql ${username_option} ${password_option} -e \"SHOW GRANTS FOR '${db_user}'@'127.0.0.1'\" | grep -q \"TO '${db_user}'\"",
         user    => 'root',
@@ -90,8 +89,5 @@ FLUSH PRIVILEGES;\"",
         unless  => "/usr/bin/mysql ${username_option} ${password_option} -e \"USE ${db_name_wikimetrics};SHOW tables\"| grep alembic ",
         user    => 'root',
         require => Exec['wikimetrics_mysql_create_user'],
-    
      }
-
-    
 }
