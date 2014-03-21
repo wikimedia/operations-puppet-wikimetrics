@@ -99,14 +99,16 @@ class wikimetrics(
 
     $revision_tablename    = undef,
 
+    $var_directory         = '/var/lib/wikimetrics',
     $config_directory      = '/etc/wikimetrics',
     $config_file_owner     = 'root',
     $config_file_group     = 'root',
     $service_start_on      = 'started network-services',
 )
 {
-    $user  = 'wikimetrics'
-    $group = 'wikimetrics'
+    $user              = 'wikimetrics'
+    $group             = 'wikimetrics'
+    $public_directory  = "${::wikimetrics::var_directory}/public"
 
     group { $group:
       ensure => present,
@@ -135,6 +137,14 @@ class wikimetrics(
         ensure  => 'directory',
         owner   => $config_file_owner,
         group   => $config_file_group,
+        require => Git::Clone['analytics/wikimetrics'],
+    }
+    # These directories should be writable by
+    # the wikimetrics user.
+    file { [$var_directory, $public_directory]:
+        ensure  => 'directory',
+        owner   => $user,
+        group   => $group,
         require => Git::Clone['analytics/wikimetrics'],
     }
 

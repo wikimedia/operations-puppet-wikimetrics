@@ -9,6 +9,14 @@ class wikimetrics::web::daemon($ensure = 'present')
     $wikimetrics_path = $::wikimetrics::path
     $service_start_on = $::wikimetrics::service_start_on
 
+    # symlink to the public directory so that
+    # flask can still serve requests from the working
+    # directory (i.e. $::wikimerics::path).
+    file { "${::wikimetrics::path}/wikimetrics/static/public":
+        ensure => 'link',
+        target => "${::wikimetrics::public_directory}",
+    }
+
     # install upstart init file
     file { '/etc/init/wikimetrics-web.conf':
         content => template('wikimetrics/upstart.wikimetrics.conf.erb'),
@@ -24,6 +32,7 @@ class wikimetrics::web::daemon($ensure = 'present')
         ensure     => $service_ensure,
         provider   => 'upstart',
         hasrestart => true,
+        require    => File["${::wikimetrics::path}/wikimetrics/static/public"],
         subscribe  => [
             File['/etc/init/wikimetrics-web.conf'],
             File["${config_directory}/web_config.yaml"],

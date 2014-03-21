@@ -6,13 +6,14 @@ class wikimetrics::web::apache($ensure = 'present')
 {
     Class['::wikimetrics'] -> Class['::wikimetrics::web::apache']
 
-    $config_directory = $::wikimetrics::config_directory
-    $site             = 'wikimetrics'
-    $docroot          = "${::wikimetrics::path}/wikimetrics"
-    $server_name      = $::wikimetrics::server_name
-    $server_port      = $::wikimetrics::server_port
-    $server_aliases   = $::wikimetrics::server_aliases
-    $ssl_redirect     = $::wikimetrics::ssl_redirect
+    $config_directory  = $::wikimetrics::config_directory
+    $public_directory  = $::wikimetrics::public_directory
+    $site              = 'wikimetrics'
+    $docroot           = "${::wikimetrics::path}/wikimetrics"
+    $server_name       = $::wikimetrics::server_name
+    $server_port       = $::wikimetrics::server_port
+    $server_aliases    = $::wikimetrics::server_aliases
+    $ssl_redirect      = $::wikimetrics::ssl_redirect
 
     include ::apache
 
@@ -25,6 +26,7 @@ class wikimetrics::web::apache($ensure = 'present')
             before => Exec["apache_enable_${site}"],
         }
     }
+
 
     file { "/etc/apache2/sites-available/${site}":
         ensure  => $ensure,

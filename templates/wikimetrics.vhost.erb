@@ -25,6 +25,9 @@ Listen <%= @server_port %>
   RewriteRule ^(.*)$ https://<%= @server_name %>$1 [L,R]
 <% end -%>
 
+  # Serve /static/public requests from the public directory
+  Alias /static/public <%= @public_directory %>
+
   WSGIDaemonProcess api user=www-data group=www-data threads=10 python-path=<%= @docroot %>
   WSGIScriptAlias / <%= @docroot %>/api.wsgi
 
