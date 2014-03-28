@@ -100,6 +100,7 @@ class wikimetrics(
     $revision_tablename    = undef,
 
     $var_directory         = '/var/lib/wikimetrics',
+    $run_directory         = '/var/run/wikimetrics',
     $config_directory      = '/etc/wikimetrics',
     $config_file_owner     = 'root',
     $config_file_group     = 'root',
@@ -109,6 +110,8 @@ class wikimetrics(
     $user              = 'wikimetrics'
     $group             = 'wikimetrics'
     $public_directory  = "${::wikimetrics::var_directory}/public"
+    $celery_beat_datafile  = "${::wikimetrics::run_directory}/celerybeat_scheduled_tasks"
+    $celery_beat_pidfile   = "${::wikimetrics::run_directory}/celerybeat.pid"
 
     group { $group:
       ensure => present,
@@ -141,7 +144,7 @@ class wikimetrics(
     }
     # These directories should be writable by
     # the wikimetrics user.
-    file { [$var_directory, $public_directory]:
+    file { [$var_directory, $public_directory, $run_directory ]:
         ensure  => 'directory',
         owner   => $user,
         group   => $group,

@@ -8,3 +8,10 @@ CELERYD_TASK_TIME_LIMIT             : 3630
 CELERYD_TASK_SOFT_TIME_LIMIT        : 3600
 DEBUG                               : <%= @debug ? 'True' : 'False' %>
 LOG_LEVEL                           : <%= @debug ? 'DEBUG' : 'INFO' %>
+CELERY_BEAT_DATAFILE                : <%= @celery_beat_datafile%>
+CELERY_BEAT_PIDFILE                 : <%= @celery_beat_pidfile%>
+CELERYBEAT_SCHEDULE                 :
+    'update-daily-recurring-reports':
+        'task'      : 'wikimetrics.schedules.daily.recurring_reports'
+        # The schedule can be set to 'daily' for a crontab-like daily recurrence
+        'schedule'  : <%=  @debug ? 'debug' : 'daily' %>
