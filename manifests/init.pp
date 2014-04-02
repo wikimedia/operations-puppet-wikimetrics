@@ -8,6 +8,12 @@
 # path in which to install wikimetrics
 # $path                  - Path in which to clone wikimetrics.
 #                          Default: /vagrant/wikimetrics
+# $user                  - wikimetrics user, wikimetrics will run as this user.
+#                          Directories that need to be written by wikimetrics will
+#                          be writeable by this user.
+# $group                 - wikimetrics group, wikimetrics will run as this group.
+#                          Directories that need to be written by wikimetrics will
+#                          be writeable by this group.
 # $repository_owner      - owner username of the cloned wikimetrics repository.
 #                          This will default to $wikimetrics::user if it is not set.
 # $debug                 - Run wikimetrics in debug mode.  Default: true
@@ -63,6 +69,10 @@ class wikimetrics(
     # path in which to install wikimetrics
     $path                  = '/srv/wikimetrics',
 
+    # wikimetrics will run as this user and group
+    $user                  = 'wikimetrics',
+    $group                 = 'wikimetrics',
+
     # owner username of the cloned wikimetrics repository.
     # This will default to $wikimetrics::user if it is not set.
     $repository_owner      = undef,
@@ -104,26 +114,28 @@ class wikimetrics(
     $config_directory      = '/etc/wikimetrics',
     $config_file_owner     = 'root',
     $config_file_group     = 'root',
+
     $service_start_on      = 'started network-services',
 )
 {
-    $user              = 'wikimetrics'
-    $group             = 'wikimetrics'
     $public_directory  = "${::wikimetrics::var_directory}/public"
     $celery_beat_datafile  = "${::wikimetrics::run_directory}/celerybeat_scheduled_tasks"
     $celery_beat_pidfile   = "${::wikimetrics::run_directory}/celerybeat.pid"
 
-    group { $group:
-      ensure => present,
-      system => true,
+    if !defined(Group[$group]) {
+        group { $group:
+          ensure => 'present',
+          system => true,
+        }
     }
-
-    user { $user:
-        ensure     => present,
-        gid        => $group,
-        home       => $path,
-        managehome => false,
-        system     => true,
+    if !defined(User[$user]) {
+        user { $user:
+            ensure     => 'present',
+            gid        => $group,
+            home       => $path,
+            managehome => false,
+            system     => true,
+        }
     }
 
     $owner = $repository_owner ? {
@@ -142,12 +154,13 @@ class wikimetrics(
         group   => $config_file_group,
         require => Git::Clone['analytics/wikimetrics'],
     }
-    # These directories should be writable by
-    # the wikimetrics user.
+
+    # These directories should be writable by $user and $group.
     file { [$var_directory, $public_directory, $run_directory ]:
         ensure  => 'directory',
         owner   => $user,
         group   => $group,
+        mode    => 0775,
         require => Git::Clone['analytics/wikimetrics'],
     }
 
