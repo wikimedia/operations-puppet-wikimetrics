@@ -45,7 +45,7 @@ class wikimetrics::database(
     exec { 'wikimetrics_mysql_create_user':
         command => "/usr/bin/mysql ${username_option} ${password_option} -e \"
 CREATE USER '${db_user}'@'localhost' IDENTIFIED BY '${db_pass}';
-CREATE USER '${db_user}'@'127.0.0.1' IDENTIFIED BY '${db_pass}';",
+CREATE USER '${db_user}'@'127.0.0.1' IDENTIFIED BY '${db_pass}';\"",
         unless  => "/usr/bin/mysql ${username_option} ${password_option} -e \"
 SELECT user FROM mysql.user;\" | grep -q \"${db_user}\"",
         user    => 'root',
@@ -66,6 +66,19 @@ SELECT user FROM mysql.user;\" | grep -q \"${db_user}\"",
         db_root_user => $db_root_user,
         db_root_pass => $db_root_pass,
     }
+
+    # If we are running in debug mode, then
+    # go ahead and create the test databases
+    if $::wikimetrics::debug {
+        wikimetrics::database::create { $db_names_testing:
+            db_user      => $db_user,
+            db_pass      => $db_pass,
+            db_root_user => $db_root_user,
+            db_root_pass => $db_root_pass,
+            before       => Exec['alembic_upgrade_head']
+        }
+    }
+
     # In wikimetrics.pp we are installing all deps wia pip
     # should be safe to assume alembic is installed
     # this would run only if alembic is not setup
@@ -79,16 +92,5 @@ SELECT user FROM mysql.user;\" | grep -q \"${db_user}\"",
             Wikimetrics::Database::Create[$db_name_wikimetrics],
             Exec['wikimetrics_mysql_create_user']
         ],
-     }
-
-     # If we are running in debug mode, then
-     # go ahead and create the test databases
-     if $::wikimetrics::debug {
-         wikimetrics::database::create { $db_names_testing:
-             db_user      => $db_user,
-             db_pass      => $db_pass,
-             db_root_user => $db_root_user,
-             db_root_pass => $db_root_pass,
-         }
-     }
+    }
  }
