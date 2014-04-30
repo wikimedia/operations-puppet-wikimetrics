@@ -3,6 +3,14 @@ start on <%= @service_start_on %>
 setuid <%= scope.lookupvar('wikimetrics::user') %>
 setgid <%= scope.lookupvar('wikimetrics::group') %>
 
-script
-    wikimetrics --mode <%= @mode %> --db-config <%= @config_directory %>/db_config.yaml --queue-config <%= @config_directory %>/queue_config.yaml --web-config <%= @config_directory %>/web_config.yaml
-end script
+# We are using exec rather than the script stanza as script runs a shell to execute
+# the command. Hence, the sh process is parent of the real process,
+# and upstart tracks sh process instead of real process.
+# If we need to use the script stanza in the future we need to use it together with
+# "expect fork" as "except fork" makes upstart track the first forked pid (the one
+# we are interested in) instead of the sh process.
+# By using exec when possible there is no parent sh process in first place,
+# so upstart tracks the real process right away.
+
+exec wikimetrics --mode <%= @mode %> --db-config <%= @config_directory %>/db_config.yaml --queue-config <%= @config_directory %>/queue_config.yaml --web-config <%= @config_directory %>/web_config.yaml
+
