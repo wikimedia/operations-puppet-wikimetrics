@@ -65,6 +65,9 @@
 #                          Default: root
 # $service_start_on      - start on stanza for upstart jobs (queue, web daemon).
 #                          Default: started network-services
+# $public_subdirectory   - Directory for public reports in $var_directory.
+#                          Must not contain slashes.
+#                          Default: public
 class wikimetrics(
     # path in which to install wikimetrics
     $path                  = '/srv/wikimetrics',
@@ -116,9 +119,16 @@ class wikimetrics(
     $config_file_group     = 'root',
 
     $service_start_on      = 'started network-services',
+
+    $public_subdirectory   = 'public',
 )
 {
-    $public_directory  = "${var_directory}/public"
+    # Although we could inline $public_directory as it is used only
+    # once in this file, other wikimetrics modules
+    # (e.g. wikimetrics::web::apache) directly access
+    # $public_directory from here, so we cannot remove it :-(
+    $public_directory = "$var_directory/$public_subdirectory"
+
     $celery_beat_datafile  = "${run_directory}/celerybeat_scheduled_tasks"
     $celery_beat_pidfile   = "${run_directory}/celerybeat.pid"
 

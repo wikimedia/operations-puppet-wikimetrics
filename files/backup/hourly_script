@@ -1,0 +1,134 @@
+#!/bin/bash
+#
+# This file is managed by puppet
+#
+
+usage()
+{
+cat << EOF
+usage: $0 -o <hourly-dir> -d <db-name> -m <db-defaults-file> -r <redis-db-file> -f <public-files>
+
+Backs up the mysql database, redis database file, and wikimetrics public reports
+as last.hourly.snapshot.tar.gz into <hourly-dir>.
+Overwrites any previous backup at the destination (specified with -o)
+
+If the script encounters symlinks, behaviour is undefined.
+
+REQUIRED
+    -o <hourly-dir>        output hourly backups to this directory
+    -d <db-name>           mysql database name to back up
+    -m <db-defaults-file>  file containing mysql defaults to connect to <db-name>
+    -r <redis-db-file>     redis database file path to back up
+    -f <public-reports>    directory of wikimetrics public reports to back up
+
+OPTIONS
+   -h   Show this message
+EOF
+}
+
+HOURLY_DESTINATION=
+DB_NAME=
+REDIS_DB_FILE=
+PUBLIC_REPORTS=
+
+while getopts "ho:d:m:r:f:" OPTION
+do
+     case "$OPTION" in
+         h)
+             usage
+             exit
+             ;;
+         o)
+             HOURLY_DESTINATION="$OPTARG"
+             ;;
+         d)
+             DB_NAME="$OPTARG"
+             ;;
+         m)
+             DB_DEFAULTS_FILE="$OPTARG"
+             ;;
+         r)
+             REDIS_DB_FILE="$OPTARG"
+             ;;
+         f)
+             PUBLIC_REPORTS="$OPTARG"
+             ;;
+         *)
+             usage
+             exit 1
+             ;;
+     esac
+done
+
+error() {
+     echo "Error:" "$@" >&2
+     exit 1
+}
+
+if [[ -z "$HOURLY_DESTINATION" ]]
+then
+    error "You did not give a hourly-dir parameter, although it's required"
+fi
+
+if [[ -z "$PUBLIC_REPORTS" ]]
+then
+    error "You did not give a public-reports parameter, although it's required"
+fi
+
+if [[ ! -d "$HOURLY_DESTINATION" ]]
+then
+    error "'$HOURLY_DESTINATION' does not exist or is not a directory"
+fi
+
+if [[ ! -d "$PUBLIC_REPORTS" ]]
+then
+    error "'$PUBLIC_REPORTS' does not exist or is not a directory"
+fi
+
+if [[ -z "$DB_NAME" ]]
+then
+    error "Missing the name of the database to back up"
+fi
+
+if [[ ! -f "$DB_DEFAULTS_FILE" ]]
+then
+    error "'$DB_DEFAULTS_FILE' does not exist or is not a file"
+fi
+
+if [[ ! -s "$REDIS_DB_FILE" ]]
+then
+    error "$REDIS_DB_FILE is empty or not a valid file path"
+fi
+
+BACKUP_DB="$(mktemp --tmpdir "database.sql.XXXXXX")"
+
+if [[ ! -f "$BACKUP_DB" ]]
+then
+    error "Could not create temorary file for database dump"
+else
+    trap "rm -f \"$BACKUP_DB\"; exit" INT TERM EXIT
+fi
+
+# mysqldump with default parameters, just plain non-incremental full backup
+mysqldump --defaults-extra-file="$DB_DEFAULTS_FILE" "$DB_NAME" > "$BACKUP_DB"
+EXITCODE=$?
+
+# the db is the one thing we cannot live without
+if [ $EXITCODE -ne 0 ] ; then
+     error "mysqldump failed with exit code $EXITCODE"
+fi
+
+if [[ ! -s "$BACKUP_DB" ]]
+then
+    error "Mysql backup file is empty or not writtable, not proceeding with backup"
+fi
+
+LANGUAGE=C flock --timeout 10 "$HOURLY_DESTINATION" --command "\
+tar fcz \"$HOURLY_DESTINATION/last.hourly.snapshot.tar.gz\" \"$BACKUP_DB\" \
+\"$REDIS_DB_FILE\" \"$PUBLIC_REPORTS\" \
+" 2> >( grep -v '^tar: Removing leading `/'\'' from member names$' >&2 )
+EXITCODE=$?
+
+if [ $EXITCODE -ne 0 ] ; then
+    error "Either failed to get lock on $HOURLY_DESTINATION, or tar-ing failed."
+fi

@@ -1,0 +1,90 @@
+#!/bin/bash
+#
+# This file is managed by puppet
+#
+
+usage()
+{
+cat << EOF
+usage: $0 -i <hourly-dir> -o <daily-dir> -k <days-to-keep>
+
+Zips and copies the last hourly backup to the daily backup destination.
+Deletes any daily backup older than -k days.
+
+REQUIRED
+    -i <hourly-dir>     input folder with hourly backups
+    -o <daily-dir>      output folder with daily backups
+    -k <days-to-keep>   how many days to keep, must be a number
+
+OPTIONS
+   -h   Show this message
+EOF
+}
+
+HOURLY_BACKUPS=
+DAILY_DESTINATION=
+KEEP_DAYS=
+
+while getopts "hi:o:k:" OPTION
+do
+     case "$OPTION" in
+         h)
+             usage
+             exit
+             ;;
+         i)
+             HOURLY_BACKUPS="$OPTARG"
+             ;;
+         o)
+             DAILY_DESTINATION="$OPTARG"
+             ;;
+         k)
+             KEEP_DAYS="$OPTARG"
+             ;;
+         *)
+             usage
+             exit 1
+             ;;
+     esac
+done
+
+error() {
+     echo "Error:" "$@" >&2
+     exit 1
+}
+
+if [[ -z "$HOURLY_BACKUPS" ]]
+then
+    error "You did not give a hourly-dir parameter, although it's required"
+fi
+
+if [[ -z "$DAILY_DESTINATION" ]]
+then
+    error "You did not give a daily-dir parameter, although it's required"
+fi
+
+if [[ ! -d "$HOURLY_BACKUPS" ]]
+then
+    error "$HOURLY_BACKUPS does not exist or is not a directory"
+fi
+
+if [[ ! -d "$DAILY_DESTINATION" ]]
+then
+    error "$DAILY_DESTINATION  does not exist or is not a directory"
+fi
+
+if [[ ! "$KEEP_DAYS" =~ ^[0-9]+$ ]]
+then
+    error "Wrong or empty value for how many days to keep, must be a number"
+fi
+
+flock --timeout 10 "$HOURLY_BACKUPS" --command "\
+cp \"$HOURLY_BACKUPS/last.hourly.snapshot.tar.gz\" \"$DAILY_DESTINATION/snapshot.$(date +"%Y-%m-%d").tar.gz\" \
+"
+EXITCODE=$?
+
+if [ $EXITCODE -ne 0 ] ; then
+    error "Either failed to get lock on $HOURLY_DESTINATION, or cp-ing failed."
+fi
+
+find "$DAILY_DESTINATION" -mindepth 1 -maxdepth 1 -name "snapshot.*.tar.gz" -mtime +"$KEEP_DAYS" -delete
