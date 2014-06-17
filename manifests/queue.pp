@@ -13,8 +13,9 @@ class wikimetrics::queue
     # TODO: Why is this not working? I don't want to use the above require
     # Class['wikimetrics'] -> Class['wikimetrics::queue']
 
-    # Install and set up redis using the redis module.
-    include ::redis
+    # Just make sure redis is installed
+    # We need to configure it manually since the module is not very flexible
+    package { 'redis-server': ensure => 'installed' }
 
     $mode             = 'queue'
     $config_directory = $::wikimetrics::config_directory
@@ -31,7 +32,6 @@ class wikimetrics::queue
         ensure     => 'running',
         provider   => 'upstart',
         hasrestart => true,
-        require    => Class['::redis'],
         subscribe  => [
             File['/etc/init/wikimetrics-queue.conf'],
             File["${config_directory}/queue_config.yaml"],

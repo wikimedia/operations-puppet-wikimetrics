@@ -10,9 +10,7 @@
 class wikimetrics::scheduler
 {
     require ::wikimetrics
-
-    # Install and set up redis using the redis module.
-    include ::redis
+    require ::wikimetrics::queue
 
     $mode             = 'scheduler'
     $config_directory = $::wikimetrics::config_directory
@@ -29,7 +27,6 @@ class wikimetrics::scheduler
         ensure     => 'running',
         provider   => 'upstart',
         hasrestart => true,
-        require    => Class['::redis'],
         subscribe  => [
             File['/etc/init/wikimetrics-scheduler.conf'],
             File["${config_directory}/queue_config.yaml"],
