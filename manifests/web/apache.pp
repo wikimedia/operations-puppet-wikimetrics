@@ -16,22 +16,14 @@ class wikimetrics::web::apache($ensure = 'present')
     $ssl_redirect      = $::wikimetrics::ssl_redirect
 
     include ::apache
-
-    if !defined(Apache::Mod['wsgi']) {
-        apache::mod { 'wsgi': }
-    }
-    # we only need mod rewrite if $ssl_redirect is true
-    if $ssl_redirect and !defined(Apache::Mod['rewrite']) {
-        apache::mod { 'rewrite':
-            before => Exec["apache_enable_${site}"],
-        }
-    }
+    include ::apache::mod::wsgi
+    include ::apache::mod::rewrite
 
 
     file { "/etc/apache2/sites-available/${site}":
         ensure  => $ensure,
         content => template('wikimetrics/wikimetrics.vhost.erb'),
-        require => [Package['apache2'], Apache::Mod['wsgi']],
+        require => Class['::apache::mod::wsgi'],
     }
 
     # disable if sites-enabled symlink exists and ensure is absent

@@ -13,10 +13,6 @@ class wikimetrics::queue
     # TODO: Why is this not working? I don't want to use the above require
     # Class['wikimetrics'] -> Class['wikimetrics::queue']
 
-    # Just make sure redis is installed
-    # We need to configure it manually since the module is not very flexible
-    package { 'redis-server': ensure => 'installed' }
-
     $mode             = 'queue'
     $config_directory = $::wikimetrics::config_directory
     $wikimetrics_path = $::wikimetrics::path
@@ -38,5 +34,6 @@ class wikimetrics::queue
             File["${config_directory}/db_config.yaml"],
             File["${config_directory}/web_config.yaml"],
         ],
+        require => Package['redis-server'],
     }
 }
