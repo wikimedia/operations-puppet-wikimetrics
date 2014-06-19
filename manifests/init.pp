@@ -118,9 +118,9 @@ class wikimetrics(
     $service_start_on      = 'started network-services',
 )
 {
-    $public_directory  = "${::wikimetrics::var_directory}/public"
-    $celery_beat_datafile  = "${::wikimetrics::run_directory}/celerybeat_scheduled_tasks"
-    $celery_beat_pidfile   = "${::wikimetrics::run_directory}/celerybeat.pid"
+    $public_directory  = "${var_directory}/public"
+    $celery_beat_datafile  = "${run_directory}/celerybeat_scheduled_tasks"
+    $celery_beat_pidfile   = "${run_directory}/celerybeat.pid"
 
     if !defined(Group[$group]) {
         group { $group:
