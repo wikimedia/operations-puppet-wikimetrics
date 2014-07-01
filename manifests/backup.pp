@@ -29,7 +29,7 @@ class wikimetrics::backup(
     $db_pass        = 'wikimetrics',
     $db_name        = 'wikimetrics',
     $db_host        = 'localhost',
-    $redis_db_file  = "/a/redis/${hostname}-6379.rdb",
+    $redis_db_file  = "/a/redis/${::hostname}-6379.rdb",
     $public_files   = '/var/lib/wikimetrics/public',
     $keep_days      = 10,
     $ensure         = present,
