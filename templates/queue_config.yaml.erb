@@ -8,6 +8,8 @@ CELERYD_TASK_TIME_LIMIT             : 3630
 CELERYD_TASK_SOFT_TIME_LIMIT        : 3600
 DEBUG                               : <%= @debug ? 'True' : 'False' %>
 LOG_LEVEL                           : <%= @debug ? 'DEBUG' : 'INFO' %>
+MAX_PARALLEL_PER_RUN                : 10
+MAX_INSTANCES_PER_RECURRENT_REPORT  : <%= @debug ? '100' : '365' %>
 CELERY_BEAT_DATAFILE                : <%= @celery_beat_datafile%>
 CELERY_BEAT_PIDFILE                 : <%= @celery_beat_pidfile%>
 CELERYBEAT_SCHEDULE                 :
