@@ -28,6 +28,11 @@ Listen <%= @server_port %>
   # Serve /static/public requests from the public directory
   Alias /static/public <%= @public_directory %>
 
+  <Directory <%= @public_directory %>>
+    # enable CORS requests
+    Header set Access-Control-Allow-Origin "*"
+  </Directory>
+
   WSGIDaemonProcess api user=www-data group=www-data threads=10 python-path=<%= @docroot %>
   WSGIScriptAlias / <%= @docroot %>/api.wsgi
 
