@@ -7,7 +7,7 @@
 # == Parameters
 # path in which to install wikimetrics
 # $path                  - Path in which to clone wikimetrics.
-#                          Default: /vagrant/wikimetrics
+#                          Default: /srv/wikimetrics
 # $user                  - wikimetrics user, wikimetrics will run as this user.
 #                          Directories that need to be written by wikimetrics will
 #                          be writeable by this user.
