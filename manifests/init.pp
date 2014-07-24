@@ -23,6 +23,8 @@
 # $celery_result_url     - celery result url.  Should be redis server URL.
 #                          Default: redis://localhost:6379/0
 #
+# $celery_concurrency    - celery queue concurrency.
+#                          Default: 16
 # $server_name           - VirtualHost ServerName of wikimetrics webserver.
 #                          Default: localhost
 # $server_port           - VirtualHost listen port of wikimetrics webserver.
@@ -84,7 +86,7 @@ class wikimetrics(
 
     $celery_broker_url     = 'redis://localhost:6379/0',
     $celery_result_url     = 'redis://localhost:6379/0',
-    $celery_concurrency    = $::processorcount,
+    $celery_concurrency    = 16,
 
     $server_name           = 'localhost',
     $server_port           = 5000,
