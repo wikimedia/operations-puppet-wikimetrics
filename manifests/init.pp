@@ -105,12 +105,14 @@ class wikimetrics(
     $db_pass_wikimetrics   = 'wikimetrics',
     $db_name_wikimetrics   = 'wikimetrics',
     $db_host_wikimetrics   = 'localhost',
+    $db_pool_wikimetrics   = 20,
 
     # Mediawiki Database Creds
     $db_user_mediawiki     = 'wikimetrics',
     $db_pass_mediawiki     = 'wikimetrics',
     $db_host_mediawiki     = 'localhost',
     $db_name_mediawiki     = 'wiki',
+    $db_pool_mediawiki     = 32,
 
     $revision_tablename    = undef,
 

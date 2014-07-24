@@ -1,6 +1,8 @@
 SQL_ECHO                        : False
 WIKIMETRICS_ENGINE_URL          : 'mysql://<%= @db_user_wikimetrics %>:<%= @db_pass_wikimetrics %>@<%= @db_host_wikimetrics %>/<%= @db_name_wikimetrics%>'
+WIKIMETRICS_POOL_SIZE           : <%= @db_pool_wikimetrics %>
 MEDIAWIKI_ENGINE_URL_TEMPLATE   : 'mysql://<%= @db_user_mediawiki %>:<%= @db_pass_mediawiki %>@<%= @db_host_mediawiki %>/<%= @db_name_mediawiki %>'
+MEDIAWIKI_POOL_SIZE             : <%= @db_pool_mediawiki %>
 DEBUG                           : <%= @debug ? 'True' : 'False' %>
 <% if @revision_tablename -%>
 REVISION_TABLENAME              : <%= @revision_tablename %>
