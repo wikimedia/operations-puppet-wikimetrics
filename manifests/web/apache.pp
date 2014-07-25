@@ -18,6 +18,7 @@ class wikimetrics::web::apache($ensure = 'present')
     include ::apache
     include ::apache::mod::wsgi
     include ::apache::mod::rewrite
+    include ::apache::mod::headers
 
 
     file { "/etc/apache2/sites-available/${site}":
