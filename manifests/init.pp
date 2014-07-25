@@ -44,6 +44,7 @@
 # $db_pass_wikimetrics   - password of wikimetrics database user.  Default: wikimetrics
 # $db_name_wikimetrics   - name of wikimetrics database.           Default: wikimetrics
 # $db_host_wikimetrics   - hostname of wikimetrics database.       Default: localhost
+# $db_pool_wikimetrics   - pool size for wikimetrics database.     Default: 20
 #
 # $db_user_mediawiki     - Mediawiki database username.  Default: wikimetrics
 # $db_pass_mediawiki     - Mediawiki database password.  Default: wikimetrics
@@ -53,6 +54,8 @@
 # $db_name_mediawiki     - Mediawiki database name.
 #                          In labs, you will want to use '{0}_p'.
 #                          Default: wiki
+# $db_pool_mediawiki     - Mediawiki pool size.
+#                          Default: 32
 # $revision_tablename    - Name of revision table in mediawiki database.
 #                          Set this only if you need to set a
 #                          custom revision tablename.  In
