@@ -65,7 +65,7 @@ class wikimetrics::backup(
 
     file { $backup_hourly_script:
         ensure  => $ensure,
-        source => 'puppet:///modules/wikimetrics/backup/hourly_script',
+        source  => 'puppet:///modules/wikimetrics/backup/hourly_script',
         owner   => $user,
         group   => $group,
         mode    => '0555',
