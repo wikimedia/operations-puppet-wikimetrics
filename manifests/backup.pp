@@ -91,7 +91,7 @@ default-character-set=utf8
         ensure   => $ensure,
         command  => "${backup_hourly_script} -o ${hourly_destination} -f ${public_files} -d ${db_name} -m ${mysql_defaults_file} -r ${redis_db_file}",
         user     => $user,
-        minute   => 0,
+        minute   => 40,
     }
 
     # backs up wikimetrics essentials daily, keeping the last $keep_days days
@@ -100,6 +100,6 @@ default-character-set=utf8
         command  => "${backup_daily_script} -i ${hourly_destination} -o ${daily_destination} -k ${keep_days}",
         user     => $user,
         hour     => 22,
-        minute   => 30,
+        minute   => 50,
     }
 }
