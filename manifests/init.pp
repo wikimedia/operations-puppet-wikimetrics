@@ -89,7 +89,7 @@ class wikimetrics(
 
     $celery_broker_url     = 'redis://localhost:6379/0',
     $celery_result_url     = 'redis://localhost:6379/0',
-    $celery_concurrency    = 16,
+    $celery_concurrency    = 10,
 
     $server_name           = 'localhost',
     $server_port           = 5000,
