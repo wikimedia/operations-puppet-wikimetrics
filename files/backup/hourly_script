@@ -30,6 +30,7 @@ HOURLY_DESTINATION=
 DB_NAME=
 REDIS_DB_FILE=
 PUBLIC_REPORTS=
+REDIS_CLI="/usr/bin/redis-cli"
 
 while getopts "ho:d:m:r:f:" OPTION
 do
@@ -96,6 +97,73 @@ if [[ ! -f "$DB_DEFAULTS_FILE" ]]
 then
     error "'$DB_DEFAULTS_FILE' does not exist or is not a file"
 fi
+
+
+# Prints a file's mtime to stdout, (or 0 if the file does not exist)
+#
+# Parameters:
+#   $1 - filename to get the mtime for
+echo_mtime() {
+    local FILE="$1"
+    if [ -e "$FILE" ]
+    then
+        stat --format='%Y' "$FILE"
+    else
+        echo 0
+    fi
+}
+
+# If redis is running, saves the current redis state and waits up to
+# 15 seconds to for its completion.
+redis_force_db_dump() {
+    if [ "$(ps -C redis-server h | wc -l)" -ge 1 ]
+    then
+        # Redis is running, so lets attempt to save redis' state
+        #
+        # We record the rdb file's mtime, then start the background save, and
+        # finally wait until the timestamp of the last save updates.  (We check
+        # the files mtime instead of using redis' LASTSAVE command to test
+        # closer at the file that we're backing up.)
+
+        local OLD_LAST_SAVE_TIMESTAMP="$(echo_mtime "$REDIS_DB_FILE")"
+
+        # Start the real background save
+        # (We have to use background, as foreground save blocks redis
+        # during the save)
+        "$REDIS_CLI" BGSAVE | grep -v '^Background saving started$'
+
+        local WAIT_COUNTER=15
+        local LAST_SAVE_TIMESTAMP="$OLD_LAST_SAVE_TIMESTAMP"
+
+        while [ "$WAIT_COUNTER" -gt 0 \
+            -a "$LAST_SAVE_TIMESTAMP" = "$OLD_LAST_SAVE_TIMESTAMP" ]
+        do
+            sleep 1
+
+            LAST_SAVE_TIMESTAMP="$(echo_mtime "$REDIS_DB_FILE")"
+
+            WAIT_COUNTER=$((WAIT_COUNTER-1))
+        done
+
+        if [ "$LAST_SAVE_TIMESTAMP" = "$OLD_LAST_SAVE_TIMESTAMP" ]
+        then
+            # We only log and do not abort if redis did not (yet) rewrite the
+            # rdb, as it means that redis is not finishing in time or is
+            # misconfigured, but it need not necessarily mean that the backup
+            # will run into problems.
+
+            echo "Warning: Redis dump did not update the timestamp of the rdb file" >&2
+        fi
+    fi
+}
+
+# Since we saw races between the below's tar and redis writing to the rdb, we
+# try to enforce a save now. This does not make races go away, but it makes them
+# less likely to occur. And it seems making them less likely is the best we can
+# meaningfully do at this point, as making them impossible requires redis
+# re-configuration in run-time, which causes more problems than they would solve
+# here.
+redis_force_db_dump
 
 if [[ ! -s "$REDIS_DB_FILE" ]]
 then
