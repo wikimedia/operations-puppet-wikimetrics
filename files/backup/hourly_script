@@ -65,6 +65,8 @@ error() {
      exit 1
 }
 
+TIMESTAMP="$(date --utc +"%Y-%m-%dT%H:%M:%SZ")"
+
 if [[ -z "$HOURLY_DESTINATION" ]]
 then
     error "You did not give a hourly-dir parameter, although it's required"
@@ -123,9 +125,44 @@ then
     error "Mysql backup file is empty or not writtable, not proceeding with backup"
 fi
 
+# We backup to a candidate tarball, and if everything works out, we replace the
+# last "good" tarball by our candidate.
+#
+# So in case of races when tar-ing up, we have the candidate which is up-to-date
+# but might be missing a few files due to the race, and we have a known good
+# (maybe not totally up-to-date) variant.
+
+HOURLY_FILE_PREFIX="$HOURLY_DESTINATION/snapshot."
+HOURLY_FILE_POSTFIX_GOOD=".tar.gz"
+HOURLY_FILE_POSTFIX_CANDIDATE="$HOURLY_FILE_POSTFIX_GOOD.candidate"
+
+HOURLY_FILE_CURRENT_GOOD="${HOURLY_FILE_PREFIX}${TIMESTAMP}${HOURLY_FILE_POSTFIX_GOOD}"
+HOURLY_FILE_CURRENT_CANDIDATE="${HOURLY_FILE_PREFIX}${TIMESTAMP}${HOURLY_FILE_POSTFIX_CANDIDATE}"
+
+# Removing all previous candidate files
+rm -f "$HOURLY_FILE_PREFIX"*"$HOURLY_FILE_POSTFIX_CANDIDATE"
+
+# Removing all good files but the last good file
+ls -1 --sort=time "$HOURLY_FILE_PREFIX"*"$HOURLY_FILE_POSTFIX_GOOD" 2>/dev/null \
+    | tail -n +2 \
+    | xargs rm -f
+
+HOURLY_FILE_OLD_GOOD="$(echo "${HOURLY_FILE_PREFIX}"*"${HOURLY_FILE_POSTFIX_GOOD}")"
+
+# Updating mtime on last good file
+#
+# This updating marks the file to belong to the current run. Hence, it does not
+# get removed early.
+if [ -e "$HOURLY_FILE_OLD_GOOD" ]
+then
+    touch "$HOURLY_FILE_OLD_GOOD"
+fi
+
 LANGUAGE=C flock --timeout 10 "$HOURLY_DESTINATION" --command "\
-tar fcz \"$HOURLY_DESTINATION/last.hourly.snapshot.tar.gz\" \"$BACKUP_DB\" \
+tar fcz \"$HOURLY_FILE_CURRENT_CANDIDATE\" \"$BACKUP_DB\" \
 \"$REDIS_DB_FILE\" \"$PUBLIC_REPORTS\" \
+&& mv -f \"$HOURLY_FILE_CURRENT_CANDIDATE\" \"$HOURLY_FILE_CURRENT_GOOD\" \
+&& rm -f \"$HOURLY_FILE_OLD_GOOD\" \
 " 2> >( grep -v '^tar: Removing leading `/'\'' from member names$' >&2 )
 EXITCODE=$?
 

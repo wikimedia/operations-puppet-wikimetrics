@@ -78,8 +78,17 @@ then
     error "Wrong or empty value for how many days to keep, must be a number"
 fi
 
+# The below cp command will typically copy either one or two files.
+# If the last hourly backup went through nicely, it will be one file:
+#   * the good backup tar-ball.
+# If the last hourly backup ran into some issues, it will be two files:
+#   * the last known good, full backup tar-ball (with bumped mtime, so it does
+#     not get cleaned up too early, and
+#   * the tar-ball containing those parts that could get backed up in the
+#     last run.
+#
 flock --timeout 10 "$HOURLY_BACKUPS" --command "\
-cp \"$HOURLY_BACKUPS/last.hourly.snapshot.tar.gz\" \"$DAILY_DESTINATION/snapshot.$(date +"%Y-%m-%d").tar.gz\" \
+cp -a \"$HOURLY_BACKUPS/snapshot\"*\".tar.gz\"* \"$DAILY_DESTINATION\" \
 "
 EXITCODE=$?
 
