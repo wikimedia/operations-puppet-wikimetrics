@@ -6,128 +6,154 @@
 #
 # == Parameters
 # path in which to install wikimetrics
-# $path                  - Path in which to clone wikimetrics.
-#                          Default: /srv/wikimetrics
-# $user                  - wikimetrics user, wikimetrics will run as this user.
-#                          Directories that need to be written by wikimetrics will
-#                          be writeable by this user.
-# $group                 - wikimetrics group, wikimetrics will run as this group.
-#                          Directories that need to be written by wikimetrics will
-#                          be writeable by this group.
-# $repository_owner      - owner username of the cloned wikimetrics repository.
-#                          This will default to $wikimetrics::user if it is not set.
-# $debug                 - Run wikimetrics in debug mode.  Default: true
+# $path                         - Path in which to clone wikimetrics.
+#                                 Default: /srv/wikimetrics
+# $user                         - wikimetrics user, wikimetrics will run as this
+#                                 user. Directories that need to be written by
+#                                 wikimetrics will be writeable by this user.
+# $group                        - wikimetrics group, wikimetrics will run as
+#                                 this group. Directories that need to be
+#                                 written by wikimetrics will be writeable by
+#                                 this group.
+# $repository_owner             - owner username of the cloned wikimetrics
+#                                 repository. This will default to
+#                                 $wikimetrics::user if it is not set.
+# $debug                        - Run wikimetrics in debug mode.  Default: true
 #
-# $celery_broker_url     - celery broker url.  Should be redis server URL.
-#                          Default: redis://localhost:6379/0
-# $celery_result_url     - celery result url.  Should be redis server URL.
-#                          Default: redis://localhost:6379/0
+# $celery_broker_url            - celery broker url.  Should be redis server
+#                                 URL.
+#                                 Default: redis://localhost:6379/0
+# $celery_result_url            - celery result url.  Should be redis server
+#                                 URL.
+#                                 Default: redis://localhost:6379/0
 #
-# $celery_concurrency    - celery queue concurrency.
-#                          Default: 16
-# $server_name           - VirtualHost ServerName of wikimetrics webserver.
-#                          Default: localhost
-# $server_port           - VirtualHost listen port of wikimetrics webserver.
-#                          Default 5000
-# $ssl_redirect          - If true, site is expected to be served via HTTPS.
-#                          Default: false.  THIS IS NOT YET SUPPORTED!
-# $server_aliases        - Array of VirtualHost ServerAliases.  Default: undef
+# $celery_concurrency           - celery queue concurrency.
+#                                 Default: 16
+# $server_name                  - VirtualHost ServerName of wikimetrics
+#                                 webserver.
+#                                 Default: localhost
+# $server_port                  - VirtualHost listen port of wikimetrics
+#                                 webserver.
+#                                 Default 5000
+# $ssl_redirect                 - If true, site is expected to be served via
+#                                 HTTPS.
+#                                 Default: false.  THIS IS NOT YET SUPPORTED!
+# $server_aliases               - Array of VirtualHost ServerAliases.
+#                                 Default: undef
 #
-# $flask_secret_key      - Flask login secret key.  This is arbitrary.
-# $meta_mw_consumer_key  - Mediawiki OAuth consumer key.
-# $meta_mw_client_secret - Mediawiki OAuth client secret.
-# $google_client_secret  - Google Auth client secret
-# $google_client_email   - Google Auth client email address
-# $google_client_id      - Google Auth client ID.
+# $flask_secret_key             - Flask login secret key.  This is arbitrary.
+# $meta_mw_consumer_key         - Mediawiki OAuth consumer key.
+# $meta_mw_client_secret        - Mediawiki OAuth client secret.
+# $google_client_secret         - Google Auth client secret
+# $google_client_email          - Google Auth client email address
+# $google_client_id             - Google Auth client ID.
 #
-# $db_user_wikimetrics   - username of wikimetrics database user.  Default: wikimetrics
-# $db_pass_wikimetrics   - password of wikimetrics database user.  Default: wikimetrics
-# $db_name_wikimetrics   - name of wikimetrics database.           Default: wikimetrics
-# $db_host_wikimetrics   - hostname of wikimetrics database.       Default: localhost
-# $db_pool_wikimetrics   - pool size for wikimetrics database.     Default: 20
+# $db_user_wikimetrics          - username of wikimetrics database user.
+#                                 Default: wikimetrics
+# $db_pass_wikimetrics          - password of wikimetrics database user.
+#                                 Default: wikimetrics
+# $db_name_wikimetrics          - name of wikimetrics database.
+#                                 Default: wikimetrics
+# $db_host_wikimetrics          - hostname of wikimetrics database.
+#                                 Default: localhost
+# $db_pool_wikimetrics          - pool size for wikimetrics database.
+#                                 Default: 20
 #
-# $db_user_mediawiki     - Mediawiki database username.  Default: wikimetrics
-# $db_pass_mediawiki     - Mediawiki database password.  Default: wikimetrics
-# $db_host_mediawiki     - Mediawiki database host.
-#                          In labs, you will want to use '{0}.labsdb'.
-#                          Default: localhost
-# $db_name_mediawiki     - Mediawiki database name.
-#                          In labs, you will want to use '{0}_p'.
-#                          Default: wiki
-# $db_pool_mediawiki     - Mediawiki pool size.
-#                          Default: 32
-# $revision_tablename    - Name of revision table in mediawiki database.
-#                          Set this only if you need to set a
-#                          custom revision tablename.  In
-#                          labs, you will probably want 'revision_userindex',
-#                          otherwise, probably just 'revision'.  Default: undef.
+# $db_user_mediawiki            - Mediawiki database username.
+#                                 Default: wikimetrics
+# $db_pass_mediawiki            - Mediawiki database password.
+#                                 Default: wikimetrics
+# $db_host_mediawiki            - Mediawiki database host.
+#                                 In labs, you will want to use '{0}.labsdb'.
+#                                 Default: localhost
+# $db_name_mediawiki            - Mediawiki database name.
+#                                 In labs, you will want to use '{0}_p'.
+#                                 Default: wiki
+# $db_pool_mediawiki            - Mediawiki pool size.
+#                                 Default: 32
+# $db_replication_lag_dbs       - List of dbs to check for lag.
+#                                 Default: []
+# $db_replication_lag_threshold - Consider a database lagged, is there was no
+#                                 edit in that many hours.
+#                                 Default: 3
+# $revision_tablename           - Name of revision table in mediawiki database.
+#                                 Set this only if you need to set a custom
+#                                 revision tablename.  In labs, you will
+#                                 probably want 'revision_userindex', otherwise,
+#                                 probably just 'revision'.  Default: undef.
 #
-# $config_directory      - Config directory for wikimetrics .yaml config files.
-#                          Default: /etc/wikimetrics
-# $config_file_owner     - User ownership of wikimetrics .yaml config files.
-#                          Default: root
-# $config_file_group     - Group ownership of wikimetrics .yaml config files.
-#                          Default: root
-# $service_start_on      - start on stanza for upstart jobs (queue, web daemon).
-#                          Default: started network-services
-# $public_subdirectory   - Directory for public reports in $var_directory.
-#                          Must not contain slashes.
-#                          Default: public
+# $config_directory             - Config directory for wikimetrics .yaml config
+#                                 files.
+#                                 Default: /etc/wikimetrics
+# $config_file_owner            - User ownership of wikimetrics .yaml config
+#                                 files.
+#                                 Default: root
+# $config_file_group            - Group ownership of wikimetrics .yaml config
+#                                 files.
+#                                 Default: root
+# $service_start_on             - start on stanza for upstart jobs (queue, web
+#                                 daemon).
+#                                 Default: started network-services
+# $public_subdirectory          - Directory for public reports in
+#                                 $var_directory. Must not contain slashes.
+#                                 Default: public
 class wikimetrics(
     # path in which to install wikimetrics
-    $path                  = '/srv/wikimetrics',
+    $path                         = '/srv/wikimetrics',
 
     # wikimetrics will run as this user and group
-    $user                  = 'wikimetrics',
-    $group                 = 'wikimetrics',
+    $user                         = 'wikimetrics',
+    $group                        = 'wikimetrics',
 
     # owner username of the cloned wikimetrics repository.
     # This will default to $wikimetrics::user if it is not set.
-    $repository_owner      = undef,
+    $repository_owner             = undef,
 
-    $debug                 = true,
+    $debug                        = true,
 
-    $celery_broker_url     = 'redis://localhost:6379/0',
-    $celery_result_url     = 'redis://localhost:6379/0',
-    $celery_concurrency    = 10,
+    $celery_broker_url            = 'redis://localhost:6379/0',
+    $celery_result_url            = 'redis://localhost:6379/0',
+    $celery_concurrency           = 10,
 
-    $server_name           = 'localhost',
-    $server_port           = 5000,
-    $server_aliases        = undef,
+    $server_name                  = 'localhost',
+    $server_port                  = 5000,
+    $server_aliases               = undef,
     # TODO: This is not yet supported.
-    $ssl_redirect          = false,
+    $ssl_redirect                 = false,
 
-    $flask_secret_key      = 'flask_secret_key',  # this is arbitrary
-    $meta_mw_consumer_key  = 'bad4e459823278bdffb5ecf0a206112d',
-    $meta_mw_client_secret = 'e312699be56f1d157657727a87ce3776e172501a',
-    $google_client_secret  = 'zKv0Qg7Zr6L3Q3CaWnIuVX4B',
-    $google_client_email   = '133082872359@developer.gserviceaccount.com',
-    $google_client_id      = '133082872359.apps.googleusercontent.com',
+    $flask_secret_key             = 'flask_secret_key',  # this is arbitrary
+    $meta_mw_consumer_key         = 'bad4e459823278bdffb5ecf0a206112d',
+    $meta_mw_client_secret        = 'e312699be56f1d157657727a87ce3776e172501a',
+    $google_client_secret         = 'zKv0Qg7Zr6L3Q3CaWnIuVX4B',
+    $google_client_email          = '133082872359@developer.gserviceaccount.com',
+    $google_client_id             = '133082872359.apps.googleusercontent.com',
 
-    $db_user_wikimetrics   = 'wikimetrics',
-    $db_pass_wikimetrics   = 'wikimetrics',
-    $db_name_wikimetrics   = 'wikimetrics',
-    $db_host_wikimetrics   = 'localhost',
-    $db_pool_wikimetrics   = 20,
+    $db_user_wikimetrics          = 'wikimetrics',
+    $db_pass_wikimetrics          = 'wikimetrics',
+    $db_name_wikimetrics          = 'wikimetrics',
+    $db_host_wikimetrics          = 'localhost',
+    $db_pool_wikimetrics          = 20,
 
     # Mediawiki Database Creds
-    $db_user_mediawiki     = 'wikimetrics',
-    $db_pass_mediawiki     = 'wikimetrics',
-    $db_host_mediawiki     = 'localhost',
-    $db_name_mediawiki     = 'wiki',
-    $db_pool_mediawiki     = 32,
+    $db_user_mediawiki            = 'wikimetrics',
+    $db_pass_mediawiki            = 'wikimetrics',
+    $db_host_mediawiki            = 'localhost',
+    $db_name_mediawiki            = 'wiki',
+    $db_pool_mediawiki            = 32,
+    $db_replication_lag_dbs       = [],
+    $db_replication_lag_threshold = 3, # hours
 
-    $revision_tablename    = undef,
+    $revision_tablename           = undef,
 
-    $var_directory         = '/var/lib/wikimetrics',
-    $run_directory         = '/var/run/wikimetrics',
-    $config_directory      = '/etc/wikimetrics',
-    $config_file_owner     = 'root',
-    $config_file_group     = 'root',
+    $var_directory                = '/var/lib/wikimetrics',
+    $run_directory                = '/var/run/wikimetrics',
+    $config_directory             = '/etc/wikimetrics',
+    $config_file_owner            = 'root',
+    $config_file_group            = 'root',
 
-    $service_start_on      = 'started network-services',
+    $service_start_on             = 'started network-services',
 
-    $public_subdirectory   = 'public',
+    $public_subdirectory          = 'public',
 )
 {
     # Although we could inline $public_directory as it is used only
