@@ -62,6 +62,11 @@ Listen <%= @server_port %>
    </IfModule>
   </Directory>
 
+ # gzip files
+ # looks like deflate is loaded by deafult
+ <IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/javascript text/css text/xml application/json text/json
+ </IfModule>
 
   WSGIDaemonProcess api user=www-data group=www-data threads=10 python-path=<%= @docroot %>
   WSGIScriptAlias / <%= @docroot %>/api.wsgi
