@@ -81,6 +81,11 @@
 #                                 revision tablename.  In labs, you will
 #                                 probably want 'revision_userindex', otherwise,
 #                                 probably just 'revision'.  Default: undef.
+# $archive_tablename            - Name of archive table in mediawiki database.
+#                                 Set this only if you need to set a
+#                                 custom archive tablename.  In
+#                                 labs, you will probably want 'archive_userindex',
+#                                 otherwise, probably just 'archive'.  Default: undef.
 #
 # $config_directory             - Config directory for wikimetrics .yaml config
 #                                 files.
@@ -144,6 +149,7 @@ class wikimetrics(
     $db_replication_lag_threshold = 3, # hours
 
     $revision_tablename           = undef,
+    $archive_tablename            = undef,
 
     $var_directory                = '/var/lib/wikimetrics',
     $run_directory                = '/var/run/wikimetrics',

@@ -8,4 +8,5 @@ REPLICATION_LAG_THRESHOLD       : <%= @db_replication_lag_threshold %> # (measur
 DEBUG                           : <%= @debug ? 'True' : 'False' %>
 <% if @revision_tablename -%>
 REVISION_TABLENAME              : <%= @revision_tablename %>
+ARCHIVE_TABLENAME               : <%= @archive_tablename %>
 <% end -%>
