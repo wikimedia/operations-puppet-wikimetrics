@@ -22,6 +22,7 @@ Listen <%= @server_port %>
   # Redirect any non HTTPS request to HTTPS
   # This HTTP Header is set by Yuvi's proxy-dammit instance
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteCond %{REMOTE_ADDR}%{REQUEST_URI} !127\.0\.0\.1/server-status
   RewriteRule ^(.*)$ https://<%= @server_name %>$1 [L,R]
 <% end -%>
 
