@@ -59,10 +59,8 @@
 # $db_pool_wikimetrics          - pool size for wikimetrics database.
 #                                 Default: 20
 #
-# $db_user_mediawiki            - Mediawiki database username.
-#                                 Default: wikimetrics
-# $db_pass_mediawiki            - Mediawiki database password.
-#                                 Default: wikimetrics
+# $db_user_mediawiki            - Mediawiki database username. Just require.
+# $db_pass_mediawiki            - Mediawiki database password. Just require.
 # $db_host_mediawiki            - Mediawiki database host.
 #                                 In labs, you will want to use '{0}.labsdb'.
 #                                 Default: localhost
@@ -76,6 +74,12 @@
 # $db_replication_lag_threshold - Consider a database lagged, is there was no
 #                                 edit in that many hours.
 #                                 Default: 3
+# $db_user_centralauth          - Centralauth database username. Just require.
+# $db_pass_centralauth          - Centralauth database password. Just require.
+# $db_host_centralauth          - Centralauth database host.
+#                                 Default: localhost
+# $db_name_centralauth          - Centralauth database name.
+#                                 Default: centralauth
 # $revision_tablename           - Name of revision table in mediawiki database.
 #                                 Set this only if you need to set a custom
 #                                 revision tablename.  In labs, you will
@@ -140,13 +144,19 @@ class wikimetrics(
     $db_pool_wikimetrics          = 20,
 
     # Mediawiki Database Creds
-    $db_user_mediawiki            = 'wikimetrics',
-    $db_pass_mediawiki            = 'wikimetrics',
+    $db_user_mediawiki            ,
+    $db_pass_mediawiki            ,
     $db_host_mediawiki            = 'localhost',
     $db_name_mediawiki            = 'wiki',
     $db_pool_mediawiki            = 32,
     $db_replication_lag_dbs       = [],
     $db_replication_lag_threshold = 3, # hours
+
+    # Centralauth Database Creds
+    $db_user_centralauth          ,
+    $db_pass_centralauth          ,
+    $db_host_centralauth          = 'localhost',
+    $db_name_centralauth          = 'centralauth',
 
     $revision_tablename           = undef,
     $archive_tablename            = undef,

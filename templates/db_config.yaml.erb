@@ -3,6 +3,7 @@ WIKIMETRICS_ENGINE_URL          : 'mysql://<%= @db_user_wikimetrics %>:<%= @db_p
 WIKIMETRICS_POOL_SIZE           : <%= @db_pool_wikimetrics %>
 MEDIAWIKI_ENGINE_URL_TEMPLATE   : 'mysql://<%= @db_user_mediawiki %>:<%= @db_pass_mediawiki %>@<%= @db_host_mediawiki %>/<%= @db_name_mediawiki %>'
 MEDIAWIKI_POOL_SIZE             : <%= @db_pool_mediawiki %>
+CENTRALAUTH_ENGINE_URL          : 'mysql://<%= @db_user_centralauth %>:<%= @db_pass_centralauth %>@<%= @db_host_centralauth %>/<%= @db_name_centralauth%>'
 REPLICATION_LAG_MW_PROJECTS     : [ <%= @db_replication_lag_dbs.collect { |db| "'" + db + "'" } . join(', ') %> ]
 REPLICATION_LAG_THRESHOLD       : <%= @db_replication_lag_threshold %> # (measured in hours)
 DEBUG                           : <%= @debug ? 'True' : 'False' %>

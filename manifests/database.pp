@@ -10,7 +10,7 @@
 # $db_user                       - username of wikimetrics database user.    Default: wikimetrics
 # $db_pass                       - password of wikimetrics database user.    Default: wikimetrics
 # $db_name_wikimetrics           - name of wikimetrics database.  Default: wikimetrics
-# $db_names_testing              - name of of testing databases.  Default: ['wikimetrics_testing', 'wiki_testing', 'wiki2_testing']
+# $db_names_testing              - name of of testing databases.  Default: ['wikimetrics_testing', 'wiki_testing', 'wiki2_testing', 'centralauth_testing']
 # $db_root_user                  - Name of user MySQL commands will be executed as.  Default: 'root'
 # $db_root_pass                  - Password for $db_root_user.  Default: no password
 # $wikimetrics_path              - Path to wikimetrics source.  Default: '/srv/wikimetrics'
@@ -19,7 +19,12 @@ class wikimetrics::database(
     $db_user                     = 'wikimetrics',
     $db_pass                     = 'wikimetrics', # you should really change this one
     $db_name_wikimetrics         = 'wikimetrics',
-    $db_names_testing            = ['wikimetrics_testing', 'wiki_testing', 'wiki2_testing'],
+    $db_names_testing            = [
+        'wikimetrics_testing',
+        'wiki_testing',
+        'wiki2_testing',
+        'centralauth_testing'
+    ],
     $db_root_user                = 'root',
     $db_root_pass                = undef,
     $wikimetrics_path            = '/srv/wikimetrics',
