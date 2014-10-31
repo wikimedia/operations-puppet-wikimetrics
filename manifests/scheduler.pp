@@ -1,6 +1,6 @@
 # == Class wikimetrics::scheduler
 #
-# Starts redis-server and  wikimetrics-scheduler mode 
+# Starts redis-server and  wikimetrics-scheduler mode
 # which, in turn, starts celery in scheduler mode
 # This class does not currently support running a redis instance
 # on a different node than the wikimetrics-queue service.

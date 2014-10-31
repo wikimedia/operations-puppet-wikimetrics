@@ -14,7 +14,7 @@ class wikimetrics::web::daemon($ensure = 'present')
     # directory (i.e. $::wikimerics::path).
     file { "${::wikimetrics::path}/wikimetrics/static/public":
         ensure => 'link',
-        target => "${::wikimetrics::public_directory}",
+        target => $::wikimetrics::public_directory,
     }
 
     # install upstart init file

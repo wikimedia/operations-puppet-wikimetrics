@@ -89,8 +89,8 @@ SELECT user FROM mysql.user;\" | grep -q \"${db_user}\"",
     # this would run only if alembic is not setup
     # as we prefer puppet not handle migrations
     exec { 'alembic_upgrade_head':
-        cwd =>  $wikimetrics_path,
-        command => "/usr/local/bin/alembic upgrade head",
+        cwd     =>  $wikimetrics_path,
+        command => '/usr/local/bin/alembic upgrade head',
         unless  => "/usr/bin/mysql ${username_option} ${password_option} -e \"USE ${db_name_wikimetrics};SHOW tables\"| grep alembic ",
         user    => 'root',
         require => [
@@ -98,4 +98,4 @@ SELECT user FROM mysql.user;\" | grep -q \"${db_user}\"",
             Exec['wikimetrics_mysql_create_user']
         ],
     }
- }
+}

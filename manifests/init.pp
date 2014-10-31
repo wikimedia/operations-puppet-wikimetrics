@@ -219,7 +219,7 @@ class wikimetrics(
         ensure  => 'directory',
         owner   => $user,
         group   => $group,
-        mode    => 0775,
+        mode    => '0775',
         require => Git::Clone['analytics/wikimetrics'],
     }
 
