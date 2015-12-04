@@ -34,6 +34,6 @@ class wikimetrics::queue
             File["${config_directory}/db_config.yaml"],
             File["${config_directory}/web_config.yaml"],
         ],
-        require => Package['redis-server'],
+        require    => Package['redis-server'],
     }
 }

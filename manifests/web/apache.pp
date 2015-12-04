@@ -31,11 +31,11 @@ class wikimetrics::web::apache($ensure = 'present')
     # disable if sites-enabled symlink exists and ensure is absent
     if ($ensure == 'absent') {
         exec { "apache_disable_${site}":
-            command   => "/usr/sbin/a2dissite -qf ${site}",
-            onlyif    => "/usr/bin/test -L /etc/apache2/sites-enabled/${site}",
-            notify    => Service['apache2'],
-            require   => Package['apache2'],
-            before    => File["/etc/apache2/sites-available/${site}"],
+            command => "/usr/sbin/a2dissite -qf ${site}",
+            onlyif  => "/usr/bin/test -L /etc/apache2/sites-enabled/${site}",
+            notify  => Service['apache2'],
+            require => Package['apache2'],
+            before  => File["/etc/apache2/sites-available/${site}"],
         }
     }
     # otherwise enable the site!

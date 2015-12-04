@@ -176,7 +176,7 @@ class wikimetrics(
     # once in this file, other wikimetrics modules
     # (e.g. wikimetrics::web::apache) directly access
     # $public_directory from here, so we cannot remove it :-(
-    $public_directory = "$var_directory/$public_subdirectory"
+    $public_directory = "${var_directory}/${public_subdirectory}"
 
     $celery_beat_datafile  = "${run_directory}/celerybeat_scheduled_tasks"
     $celery_beat_pidfile   = "${run_directory}/celerybeat.pid"
