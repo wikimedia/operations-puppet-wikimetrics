@@ -246,8 +246,8 @@ class wikimetrics(
     if !defined(Package['python-dev']) {
         package { 'python-dev': ensure => 'installed' }
     }
-    if !defined(Package['libmysqlclient-dev']) {
-        package { 'libmysqlclient-dev': ensure => 'installed' }
+    if !defined(Package['default-libmysqlclient-dev']) {
+        package { 'default-libmysqlclient-dev': ensure => 'installed' }
     }
 
     # This class will not fully install dependencies for wikimetrics.
